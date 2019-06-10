@@ -11,6 +11,13 @@ holidays = [
     date(2019, 12, 17)
 ]
 
+stations = []
+with open('stations.txt', mode="r", encoding="utf-8") as f:
+    stations = f.read().splitlines() 
+
+def getStations():
+    return stations
+
 def isHoliday(d = (datetime.now() - timedelta(hours = 2)).date()):
     if d in holidays:
         return True
@@ -146,3 +153,20 @@ def getNext(station_id, fi, bi):
         bi += 1
         back = tab[bi][0]
     return forw, back, fi, bi
+
+def getSeveral(station_id, count):
+    forw, back = [], []
+    f, b, fi, bi = getNearest(station_id)
+    if f != -1:
+        forw.append(f)
+    if b != -1:
+        back.append(b)
+    
+    for i in range(count - 1):
+        f, b, fi, bi = getNext(station_id, fi, bi)
+        if f != -1:
+            forw.append(f)
+        if b != -1:
+            back.append(b)
+    
+    return forw, back
