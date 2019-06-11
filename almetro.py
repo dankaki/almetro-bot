@@ -39,7 +39,6 @@ def button(bot, update):
         fw, bc = timescraper.getFirst(int(data[1:]))
     elif data[0] == 'L':
         fw, bc = timescraper.getLast(int(data[1:]))
-        rep += 'Внимание! Последний поезд может быть не запущен!\r\n'
     elif data[0] == 'N':
         fw, bc, fi, bi = timescraper.getNearest(int(data[1:]))
         callback = 'X'+data[1:]+'*{0}*{1}'.format(fi,bi)

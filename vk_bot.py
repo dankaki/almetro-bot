@@ -1,5 +1,5 @@
 from bottle import route, run, template, request
-import vk, random, re
+import vk, random, re, json
 import timescraper, secret
 
 token = secret.VK_TOKEN
@@ -10,10 +10,17 @@ with open('init_msg.txt', mode="r", encoding="utf-8") as f:
     init_msg = f.read()
 
 stations = timescraper.stations
+actions = [{'type':'text','label':s} for s in stations]
+buttons = [{'action':a,'color':'secondary'} for a in actions]
+buttons = [buttons[0:3],buttons[3:6],buttons[6:]]
+keyboard = {'buttons':buttons,'one_time':False}
+keyboard = json.dumps(keyboard,ensure_ascii=False)
+
 patterns = [re.compile('райымбек', re.I), re.compile('жибек|жібек', re.I),
     re.compile('алмал', re.I), re.compile('аба', re.I), re.compile('байкон|байқон', re.I),
     re.compile('театр|ауэз', re.I), re.compile('алатау', re.I), re.compile('сайран', re.I),
     re.compile('москва|мәскеу', re.I)]
+
 
 def findStation(s):
     for i in range(len(patterns)):
@@ -33,7 +40,7 @@ def index():
         d = data['object']['body']
         user_id = data['object']['user_id']
         if not api.groups.isMember(group_id='almetro',user_id=user_id):
-            api.messages.send(peer_id = user_id, message='Подпишитесь чтобы пользоваться ботом')
+            api.messages.send(peer_id = user_id, message='Подпишитесь чтобы пользоваться ботом', random_id = random.randint(10000,999999))
             return 'ok'
         if len(d) == 1 and d in '123456789':            
             station_id = int(d) - 1
@@ -53,13 +60,13 @@ def index():
                 for bc in back:
                     reply += bc.strftime("%H:%M:%S") + '\r\n'
             
-            api.messages.send(peer_id = user_id, message = reply)
+            api.messages.send(peer_id = user_id, message = reply, keyboard = keyboard, random_id = random.randint(10000,999999))
         
         else:
             station_id = findStation(d)
 
             if station_id == -1:
-                api.messages.send(peer_id = user_id, message = init_msg)
+                api.messages.send(peer_id = user_id, message = init_msg, keyboard = keyboard, random_id = random.randint(10000,999999))
                 return 'ok'
             
             forw, back = timescraper.getSeveral(station_id, 3)
@@ -78,7 +85,7 @@ def index():
                 for bc in back:
                     reply += bc.strftime("%H:%M:%S") + '\r\n'
             
-            api.messages.send(peer_id = user_id, message = reply)
+            api.messages.send(peer_id = user_id, message = reply, keyboard = keyboard, random_id = random.randint(10000,999999))
             
     return 'ok'
 

@@ -15,9 +15,6 @@ stations = []
 with open('stations.txt', mode="r", encoding="utf-8") as f:
     stations = f.read().splitlines() 
 
-def getStations():
-    return stations
-
 def isHoliday(d = (datetime.now() - timedelta(hours = 2)).date()):
     if d in holidays:
         return True
